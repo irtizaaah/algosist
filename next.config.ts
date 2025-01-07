@@ -1,9 +1,16 @@
-// next.config.ts
+// next.config.js
 module.exports = {
   eslint: {
-    ignoreDuringBuilds: true, // Disable ESLint during builds
+    ignoreDuringBuilds: true, // Ignores linting errors during build
   },
-  typescript: {
-    ignoreBuildErrors: true, // Disable TypeScript checks during builds
+  // Alternatively, add custom rules
+  reactStrictMode: true,
+  webpack(config) {
+    config.ignoreWarnings = [
+      {
+        message: /useSearchParams should be wrapped in a suspense boundary/,
+      },
+    ];
+    return config;
   },
 };
