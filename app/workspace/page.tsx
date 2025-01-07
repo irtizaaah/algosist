@@ -15,19 +15,7 @@ const EditorComponent: React.FC = () => {
     return runPython(codeContent);
   };
 
-  // State to check if component is mounted (to avoid SSR issues)
-  const [isMounted, setIsMounted] = useState(false);
-  
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // If the component is not mounted, show a loading message
-  if (!isMounted) {
-    return <div>Loading...</div>;
-  }
-
-  // Now it’s safe to call useSearchParams after mount
+  // GET PARAMETERS
   const searchParams = useSearchParams();
   const unitId = Number(searchParams.get('unit_id'));
   const conceptId = Number(searchParams.get('concept_id'));
@@ -95,14 +83,12 @@ const EditorComponent: React.FC = () => {
         />
         
         <Split sizes={[50, 50]} minSize={80} direction="horizontal" gutterSize={10} style={{ display: 'flex', flexGrow: 1, overflowY: 'auto' }}>
-          <Suspense fallback={<div>Loading markdown...</div>}>
-            <MarkdownView
-              content={markdownContent}
-              tabs={markdownList.map(md => md.name)}
-              activeTab={activeMarkdownTab}
-              handleTabClick={handleMarkdownTabClick}
-            />
-          </Suspense>
+          <MarkdownView
+            content={markdownContent}
+            tabs={markdownList.map(md => md.name)}
+            activeTab={activeMarkdownTab}
+            handleTabClick={handleMarkdownTabClick}
+          />
 
           <Split
             sizes={[70, 30]}
@@ -112,27 +98,23 @@ const EditorComponent: React.FC = () => {
             style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, maxHeight: 'calc(98vh - 2rem)' }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto' }}>
-              <Suspense fallback={<div>Loading code editor...</div>}>
-                <CodeEditor
-                  content={codeContent}
-                  tabs={codeList.map(md => md.name)}
-                  activeTab={activeCodeTab}
-                  handleTabClick={handleCodeTabClick}
-                  onCodeChange={handleCodeChange}
-                />
-              </Suspense>
+              <CodeEditor
+                content={codeContent}
+                tabs={codeList.map(md => md.name)}
+                activeTab={activeCodeTab}
+                handleTabClick={handleCodeTabClick}
+                onCodeChange={handleCodeChange}
+              />
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto' }}>
-              <Suspense fallback={<div>Loading tests...</div>}>
-                <TestSuite
-                  contentList={testContentList}
-                  tabs={testList.map(test => test.name)}
-                  activeTab={activeTestTab}
-                  handleTabClick={handleTestTabClick}
-                  output={output}
-                />
-              </Suspense>
+              <TestSuite
+                contentList={testContentList}
+                tabs={testList.map(test => test.name)}
+                activeTab={activeTestTab}
+                handleTabClick={handleTestTabClick}
+                output={output}
+              />
             </div>
           </Split>
         </Split>

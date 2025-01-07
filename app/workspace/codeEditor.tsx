@@ -76,12 +76,14 @@ const CodeEditor: React.FC<{
         position: 'relative',
       }}
     >
-      <TabNavigation
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabClick={handleTabClick}
-        palette={darkPurplePalette}
-      />
+      <div style={{position: 'sticky',top: 0,zIndex: 1,}}>
+        <TabNavigation
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabClick={handleTabClick}
+          palette={darkPurplePalette}
+        />
+      </div>
       <div style={{ marginRight: '15px', marginTop: '10px', display: 'flex', justifyContent:'flex-end', gap: '10px' }}>
         {/* <button onClick={() => setShowResetConfirmation(true)} style={{ fontSize: '1.3rem', color:'#fff'}}>
           Reset
