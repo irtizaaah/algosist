@@ -1,11 +1,11 @@
-export const runJs = (codeContent) => {
+export const runJs = (codeContent: string) => {
     return new Promise((resolve) => {
         try {
             // Store the original console.log function
             const originalConsoleLog = console.log;
 
             // Create an array to collect log outputs
-            let logOutputs = [];
+            let logOutputs: any = [];
 
             // Override console.log
             console.log = (...args) => {

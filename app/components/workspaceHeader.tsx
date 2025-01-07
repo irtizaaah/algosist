@@ -11,6 +11,8 @@ interface HeaderProps {
   problemIndex: number;
   runCode: () => string;
   iterateProblems: (index: number) => void;
+  setOutput: (index: string) => void
+  solution: string
 }
 
 // Your existing styles
@@ -51,14 +53,13 @@ const modalStyle: React.CSSProperties = {
   zIndex: 3,
 };
 
-const Header = ({ problemIndex, numOfProblems, code , iterateProblems, runCode, output, setOutput, solution}: HeaderProps) => {
+const Header = ({ problemIndex, numOfProblems, code , iterateProblems, runCode, setOutput, solution}: HeaderProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState<JSX.Element | null>(null);
   const router = useRouter(); // Initialize the router
 
   const run = async (code: string) => {
-    //const output = await runPython(code);
-    let msg = runCode(code)
+    const msg = runCode(code)
     setOutput(msg)
   };
 

@@ -12,10 +12,6 @@ const ThreeColumnsPage = () => {
     const router = useRouter();
     const [selectedUnitId, setSelectedUnitId] = useState<number>(0);
 
-    const handleRedirect = () => {
-        router.push('/home');
-    };
-
     const pageStyle: React.CSSProperties = {
         maxWidth: '1400px',
         width: '100%',

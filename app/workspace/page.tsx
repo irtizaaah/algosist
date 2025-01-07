@@ -8,7 +8,7 @@ import CodeEditor from './codeEditor';
 import Split from 'react-split';
 import Header from '../components/workspaceHeader';
 import TestSuite from './testSuite';
-import {runJs, runPython} from '../browser-runtime/execution'
+import {runPython} from '../browser-runtime/execution'
 
 const EditorComponent: React.FC = () => {
   const runCode = async() => {

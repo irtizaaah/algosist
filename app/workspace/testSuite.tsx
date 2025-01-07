@@ -35,7 +35,7 @@ const TestSuite: React.FC<TestSuiteProps> = ({
           <div style={styles.console}>
             <div style={styles.consoleBody}>
               <pre style={styles.consoleText}>
-                > Output
+                {'>'}Output
                 {'\n'}{output}
               </pre>
             </div>

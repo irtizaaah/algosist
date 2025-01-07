@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { availablePalettes, defaultPalette, Palette } from './palettes';
+import { defaultPalette, Palette } from './palettes';
 
 type CardProps = {
   children: React.ReactNode;

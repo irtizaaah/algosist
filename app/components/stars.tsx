@@ -3,9 +3,10 @@ import Image from 'next/image';
 
 interface StarProps {
   mastery: number;
+  key: number;
 }
 
-const Stars: React.FC<StarProps> = ({ mastery }) => {
+const Stars: React.FC<StarProps> = ({ key=0, mastery }) => {
   // Determine the number of stars based on mastery value
   const getStarStatus = (index: number) => {
     if (mastery >= 0.9) return 'star';
@@ -19,7 +20,7 @@ const Stars: React.FC<StarProps> = ({ mastery }) => {
       {[...Array(3)].map((_, index) => (
         <div style={{margin:'2px'}}>
           <Image
-            key={index}
+            key={index+key}
             src={`/star/${getStarStatus(index)}.svg`}
             alt="Star"
             width={20}
