@@ -1,19 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MarkdownView from './markdownView';
-import { units, problem_contents , decode } from '../utils/data';
+import { units, problem_contents, decode } from '../utils/data';
 import CodeEditor from './codeEditor';
 import Split from 'react-split';
 import Header from '../components/workspaceHeader';
 import TestSuite from './testSuite';
-import {runPython} from '../browser-runtime/execution'
+import { runPython } from '../browser-runtime/execution';
 
 const EditorComponent: React.FC = () => {
-  const runCode = async() => {
+  const runCode = async () => {
     return runPython(codeContent);
-  }
+  };
 
   // GET PARAMETERS
   const searchParams = useSearchParams();
@@ -27,7 +27,7 @@ const EditorComponent: React.FC = () => {
   const [problemIndex, setProblemIndex] = useState(0);
   const numOfProblems = concept?.problems.length || 0;
   const problemId = concept?.problems[problemIndex]?.problem_id;
-  
+
   // GET PROBLEM CONTENT
   const problemContent = problem_contents.find(problem => problem.problem_id === problemId);
   const problemTitle = `# ${concept?.problems[problemIndex]?.name || ''}\n`;
@@ -41,12 +41,12 @@ const EditorComponent: React.FC = () => {
   const codeList = problemContent?.content.code || [];
   const [activeCodeTab, setActiveCodeTab] = useState(0);
   const [codeContent, setCodeContent] = useState<string>(decode(codeList[activeCodeTab]?.data || ''));
-  
+
   // TEST STATE
   const testList = problemContent?.content.test || [];
   const [activeTestTab, setActiveTestTab] = useState(testList.length);
   const testContentList = testList[activeTestTab]?.data || ['No test content available'];
-  const [output, setOutput] = useState<string>("");
+  const [output, setOutput] = useState<string>('');
 
   // SOLUTION STATE
   const solutionList = problemContent?.content.solutions || [];
@@ -56,7 +56,7 @@ const EditorComponent: React.FC = () => {
   useEffect(() => {
     const updatedCodeContent = decode(codeList[activeCodeTab]?.data || 'No code content available');
     setCodeContent(updatedCodeContent);
-  }, [activeCodeTab, problemIndex]);  // Dependencies on activeCodeTab and problemIndex
+  }, [activeCodeTab, problemIndex]); // Dependencies on activeCodeTab and problemIndex
 
   // Handlers for tab clicks
   const handleMarkdownTabClick = (index: number) => setActiveMarkdownTab(index);
@@ -69,56 +69,57 @@ const EditorComponent: React.FC = () => {
   };
 
   return (
-    <div style={{ height: '98vh', margin: '0 1rem', display: 'flex', flexDirection: 'column'}}>
-      <Header 
-        runCode = {runCode}
-        code={codeContent}
-        numOfProblems={numOfProblems}
-        problemIndex={problemIndex}
-        iterateProblems={setProblemIndex}
-        output={output}
-        setOutput={setOutput}
-        solution={solutionContent}
-      />
-      
-      <Split sizes={[50, 50]} minSize={80} direction="horizontal" gutterSize={10} style={{ display: 'flex', flexGrow: 1, overflowY: 'auto' }}>
-        
-        <MarkdownView
-          content={markdownContent}
-          tabs={markdownList.map(md => md.name)}
-          activeTab={activeMarkdownTab}
-          handleTabClick={handleMarkdownTabClick}
+    <Suspense fallback={<div>Loading...</div>}>
+      <div style={{ height: '98vh', margin: '0 1rem', display: 'flex', flexDirection: 'column' }}>
+        <Header 
+          runCode={runCode}
+          code={codeContent}
+          numOfProblems={numOfProblems}
+          problemIndex={problemIndex}
+          iterateProblems={setProblemIndex}
+          output={output}
+          setOutput={setOutput}
+          solution={solutionContent}
         />
+        
+        <Split sizes={[50, 50]} minSize={80} direction="horizontal" gutterSize={10} style={{ display: 'flex', flexGrow: 1, overflowY: 'auto' }}>
+          <MarkdownView
+            content={markdownContent}
+            tabs={markdownList.map(md => md.name)}
+            activeTab={activeMarkdownTab}
+            handleTabClick={handleMarkdownTabClick}
+          />
 
-        <Split
-          sizes={[70, 30]}
-          minSize={85}
-          direction="vertical"
-          gutterSize={10}
-          style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, maxHeight: 'calc(98vh - 2rem)' }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto' }}>
-            <CodeEditor
-              content={codeContent}
-              tabs={codeList.map(md => md.name)}
-              activeTab={activeCodeTab}
-              handleTabClick={handleCodeTabClick}
-              onCodeChange={handleCodeChange}
-            />
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto' }}>
-            <TestSuite
-              contentList={testContentList}
-              tabs={testList.map(test => test.name)}
-              activeTab={activeTestTab}
-              handleTabClick={handleTestTabClick}
-              output={output}
-            />
-          </div>
+          <Split
+            sizes={[70, 30]}
+            minSize={85}
+            direction="vertical"
+            gutterSize={10}
+            style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, maxHeight: 'calc(98vh - 2rem)' }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto' }}>
+              <CodeEditor
+                content={codeContent}
+                tabs={codeList.map(md => md.name)}
+                activeTab={activeCodeTab}
+                handleTabClick={handleCodeTabClick}
+                onCodeChange={handleCodeChange}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto' }}>
+              <TestSuite
+                contentList={testContentList}
+                tabs={testList.map(test => test.name)}
+                activeTab={activeTestTab}
+                handleTabClick={handleTestTabClick}
+                output={output}
+              />
+            </div>
+          </Split>
         </Split>
-      </Split>
-    </div>
+      </div>
+    </Suspense>
   );
 };
 
