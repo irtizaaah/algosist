@@ -9,14 +9,18 @@ import Split from 'react-split';
 import Header from '../components/workspaceHeader';
 import TestSuite from './testSuite';
 import { runPython } from '../browser-runtime/execution';
+import dynamic from 'next/dynamic';
 
+// Dynamic import for EditorComponent to run only on the client-side
 const EditorComponent: React.FC = () => {
   const runCode = async () => {
     return runPython(codeContent);
   };
 
-  // GET PARAMETERS
+  // GET PARAMETERS (wrapped in Suspense)
   const searchParams = useSearchParams();
+  
+  // These are declared only once, directly
   const unitId = Number(searchParams.get('unit_id'));
   const conceptId = Number(searchParams.get('concept_id'));
 
@@ -123,4 +127,6 @@ const EditorComponent: React.FC = () => {
   );
 };
 
-export default EditorComponent;
+export default dynamic(() => Promise.resolve(EditorComponent), {
+  ssr: false,
+});
