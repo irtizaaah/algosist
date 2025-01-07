@@ -1,0 +1,113 @@
+interface UserProblem {
+  user_id: number;
+  problem_id: number;
+  mastery: number;
+  last_reviewed: string;  // ISO 8601 timestamp
+  next_review: string;    // ISO 8601 timestamp
+  review_quality: number; // 1 to 5 scale
+  repetitions_count: number;
+  prior_learning_rate: number;
+  learning_rate: number;
+  slip_rate: number;
+  guess_rate: number;
+}
+
+function calculateBKT(userProblems: UserProblem[]): UserProblem[] {
+  const updatedProblems = userProblems.map(problem => {
+    // Set default values for missing parameters
+    const {
+      mastery = 0.5,                  // Default mastery
+      review_quality = 3,             // Default review quality (neutral)
+      repetitions_count = 0,         // Default repetitions count
+      prior_learning_rate = 0.5,     // Default prior learning rate
+      learning_rate = 0.5,           // Default learning rate
+      slip_rate = 0.2,                // Default slip rate
+      guess_rate = 0.2,               // Default guess rate
+    } = problem;
+
+    // Calculate BKT based on review quality and other parameters
+    const updatedMastery = calculateMastery(mastery, review_quality, repetitions_count);
+    const updatedLearningRate = calculateLearningRate(learning_rate, prior_learning_rate, review_quality);
+    const updatedSlipRate = calculateSlipRate(slip_rate, review_quality);
+    const updatedGuessRate = calculateGuessRate(guess_rate, review_quality);
+
+    return {
+      ...problem,
+      mastery: updatedMastery,
+      learning_rate: updatedLearningRate,
+      slip_rate: updatedSlipRate,
+      guess_rate: updatedGuessRate,
+      prior_learning_rate: learning_rate,  // Save the current learning rate as the prior for next calculation
+    };
+  });
+
+  return updatedProblems;
+}
+
+function calculateMastery(currentMastery: number, reviewQuality: number, repetitionsCount: number): number {
+  // Simplified mastery calculation, you can use more sophisticated models for BKT
+  const masteryChange = (reviewQuality / 5) * (1 / (1 + Math.exp(-0.1 * (repetitionsCount - 5))));
+  return Math.min(1, Math.max(0, currentMastery + masteryChange));
+}
+
+function calculateLearningRate(currentLearningRate: number, priorLearningRate: number, reviewQuality: number): number {
+  // Learning rate adjustment based on review quality and prior learning rate
+  return Math.min(1, Math.max(0, currentLearningRate + (reviewQuality - 3) * 0.05));
+}
+
+function calculateSlipRate(currentSlipRate: number, reviewQuality: number): number {
+  // Slip rate adjustment based on review quality (lower quality means higher slip rate)
+  return Math.min(1, Math.max(0, currentSlipRate + (5 - reviewQuality) * 0.02));
+}
+
+function calculateGuessRate(currentGuessRate: number, reviewQuality: number): number {
+  // Guess rate adjustment based on review quality (better quality means lower guess rate)
+  return Math.min(1, Math.max(0, currentGuessRate - (reviewQuality - 3) * 0.02));
+}
+
+// Example usage:
+
+const userProblems: UserProblem[] = [
+  {
+    user_id: 1,
+    problem_id: 1,
+    mastery: 0.7,
+    last_reviewed: '2025-01-05T10:00:00',
+    next_review: '2025-01-06T10:00:00',
+    review_quality: 4,
+    repetitions_count: 3,
+    prior_learning_rate: 0.5,
+    learning_rate: 0.6,
+    slip_rate: 0.1,
+    guess_rate: 0.2
+  },
+  {
+    user_id: 2,
+    problem_id: 2,
+    mastery: 0.6,
+    last_reviewed: '2025-01-04T12:00:00',
+    next_review: '2025-01-06T12:00:00',
+    review_quality: 2,
+    repetitions_count: 1,
+    prior_learning_rate: 0.4,
+    learning_rate: 0.5,
+    slip_rate: 0.3,
+    guess_rate: 0.3
+  },
+  {
+    user_id: 3,
+    problem_id: 3,
+    mastery: 0.8,
+    last_reviewed: '2025-01-03T14:00:00',
+    next_review: '2025-01-04T14:00:00',
+    review_quality: 5,
+    repetitions_count: 2,
+    prior_learning_rate: 0.7,
+    learning_rate: 0.8,
+    slip_rate: 0.1,
+    guess_rate: 0.1
+  }
+];
+
+const updatedProblems = calculateBKT(userProblems);
+console.log(updatedProblems);
